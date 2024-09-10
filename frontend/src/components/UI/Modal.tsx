@@ -11,19 +11,16 @@ function Modal({ children, open, className = '' }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
-    const dialog = dialogRef.current;
+    const modal = dialogRef.current;
 
-    if (dialog) {
+    if (modal) {
       if (open) {
-        if (!dialog.open) {
-          dialog.showModal();
-        }
-      } else {
-        if (dialog.open) {
-          dialog.close();
+        if (!modal.open) {
+          modal.showModal();
         }
       }
     }
+    return () => modal?.close();
   }, [open]);
 
   return createPortal(
