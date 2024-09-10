@@ -6,7 +6,8 @@ const express = require('express');
 const app = express();
 
 app.use(bodyParser.json());
-app.use(express.static('backend/public'));
+
+app.use('/images', express.static('public/images'));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
