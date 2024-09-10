@@ -1,7 +1,8 @@
+import { useCart } from '../hooks/useCart';
 import { currencyFormatter } from '../util/formatting';
 import Button from './UI/Button';
 
-type Meal = {
+export type MealType = {
   id: string;
   name: string;
   price: string;
@@ -10,10 +11,17 @@ type Meal = {
 };
 
 type MealItemProps = {
-  meal: Meal;
+  meal: MealType;
 };
 
 function MealItem({ meal }: MealItemProps) {
+  const { addItem, items } = useCart();
+  console.log(items);
+
+  const handleAddToCart = () => {
+    addItem({ ...meal, quantity: 1 });
+  };
+
   return (
     <li className='meal-item'>
       <article>
@@ -24,7 +32,9 @@ function MealItem({ meal }: MealItemProps) {
           <p className='meal-item-description'> {meal.description}</p>
         </div>
         <p className='meal-item-actions'>
-          <Button textOnly={false}> Add to cart</Button>
+          <Button textOnly={false} onClick={() => handleAddToCart()}>
+            Add to cart
+          </Button>
         </p>
       </article>
     </li>

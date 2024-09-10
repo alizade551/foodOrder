@@ -1,7 +1,10 @@
 import logo from '../assets/logo.jpg';
+import { useCart } from '../hooks/useCart';
 import Button from './UI/Button';
 
 function Header() {
+  const { items } = useCart();
+  const totalCartsItems = items.reduce((acc, item) => (acc += item.quantity), 0);
   return (
     <header id='main-header'>
       <div id='title'>
@@ -9,7 +12,7 @@ function Header() {
         <h1>React Food</h1>
       </div>
       <nav>
-        <Button textOnly={true}>Cart (0)</Button>
+        <Button textOnly={true}>Cart ({totalCartsItems})</Button>
       </nav>
     </header>
   );
