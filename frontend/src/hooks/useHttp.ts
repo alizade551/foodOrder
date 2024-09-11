@@ -10,7 +10,8 @@ type HttpResponse<T> = {
   data: T | undefined;
   error: string | null;
   isLoading: boolean;
-  sendRequest: () => Promise<void>;
+  sendRequest: (data?: string) => Promise<void>;
+  clearData: () => void;
 };
 
 async function sendHttpRequest<T>(url: string, config?: HttpConfig): Promise<T> {
@@ -27,12 +28,16 @@ function useHttp<T>(url: string, config?: HttpConfig, initialData?: T): HttpResp
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  const clearData = () => setData(initialData);
+
   const sendRequest = useCallback(
-    async function sendRequest() {
+    async function sendRequest(requestData?: string) {
       setIsLoading(true);
       try {
-        const resData = await sendHttpRequest<T>(url, config);
+        const updatedConfig = requestData ? { ...config, body: requestData } : config;
+        const resData = await sendHttpRequest<T>(url, updatedConfig);
         setData(resData);
+        setError(null);
       } catch (error) {
         setError((error as Error).message || 'Something went wrong');
       }
@@ -52,6 +57,7 @@ function useHttp<T>(url: string, config?: HttpConfig, initialData?: T): HttpResp
     error,
     isLoading,
     sendRequest,
+    clearData,
   };
 }
 

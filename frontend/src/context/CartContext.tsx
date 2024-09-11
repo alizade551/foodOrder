@@ -11,6 +11,7 @@ type ShoppingContextType = {
   items: cartItem[];
   addItem: (item: cartItem) => void;
   removeItem: (id: string) => void;
+  clearItems: () => void;
 };
 
 type cartItemsType = {
@@ -19,7 +20,8 @@ type cartItemsType = {
 
 type CartActionType =
   | { type: 'ADD_ITEM'; payload: { item: cartItem } }
-  | { type: 'REMOVE_ITEM'; payload: { id: string } };
+  | { type: 'REMOVE_ITEM'; payload: { id: string } }
+  | { type: 'CLEAR_ITEMS' };
 
 type CartContextProviderProps = {
   children: React.ReactNode;
@@ -33,6 +35,7 @@ export const CartContext = createContext<ShoppingContextType>({
   items: [],
   addItem: () => {},
   removeItem: () => {},
+  clearItems: () => {},
 });
 
 const cartReducer = (state: cartItemsType, action: CartActionType) => {
@@ -67,6 +70,9 @@ const cartReducer = (state: cartItemsType, action: CartActionType) => {
       }
       return { ...state, items: updatedItems };
     }
+    case 'CLEAR_ITEMS': {
+      return { ...state, items: [] };
+    }
 
     default:
       return state;
@@ -84,7 +90,11 @@ export const CartContextProvider = ({ children }: CartContextProviderProps) => {
     dispatch({ type: 'REMOVE_ITEM', payload: { id } });
   };
 
-  const cartContextValue = { items: state.items, addItem, removeItem };
+  const clearItems = () => {
+    dispatch({ type: 'CLEAR_ITEMS' });
+  };
+
+  const cartContextValue = { items: state.items, addItem, removeItem, clearItems };
 
   return <CartContext.Provider value={cartContextValue}>{children}</CartContext.Provider>;
 };

@@ -4,6 +4,8 @@ import { useProgress } from '../hooks/useProgress';
 import Button from './UI/Button';
 import Input from './UI/Input';
 import Modal from './UI/Modal';
+import useHttp from '../hooks/useHttp';
+import Error from './Error';
 
 type FormField = {
   value: string;
@@ -19,17 +21,34 @@ type FormState = {
   city: FormField;
 };
 
+const requestConfig = {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+};
+
+const formInitialState: FormState = {
+  fullName: { value: '', isTouched: false, error: null },
+  email: { value: '', isTouched: false, error: null },
+  postalCode: { value: '', isTouched: false, error: null },
+  street: { value: '', isTouched: false, error: null },
+  city: { value: '', isTouched: false, error: null },
+};
+
 function Checkout() {
-  const [form, setForm] = useState<FormState>({
-    fullName: { value: '', isTouched: false, error: null },
-    email: { value: '', isTouched: false, error: null },
-    postalCode: { value: '', isTouched: false, error: null },
-    street: { value: '', isTouched: false, error: null },
-    city: { value: '', isTouched: false, error: null },
-  });
+  const [form, setForm] = useState<FormState>(formInitialState);
+
+  const {
+    data,
+    isLoading: isSending,
+    error,
+    sendRequest,
+    clearData,
+  } = useHttp('http://localhost:3000/orders', requestConfig);
 
   const { progress, hideCheckOut } = useProgress();
-  const { items } = useCart();
+  const { items, clearItems } = useCart();
 
   const cartTotal: number = items.reduce((acc, el) => acc + parseFloat(el.price) * el.quantity, 0);
 
@@ -78,24 +97,70 @@ function Checkout() {
       return;
     }
 
-    console.log(form, items);
-    fetch('http://localhost:3000/orders', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    sendRequest(
+      JSON.stringify({
         order: {
           items,
           customer: form,
         },
-      }),
-    });
+      })
+    );
+
+    // fetch('http://localhost:3000/orders', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     order: {
+    //       items,
+    //       customer: form,
+    //     },
+    //   }),
+    // });
   };
 
   const handleClose = () => {
     hideCheckOut();
   };
+
+  const handleFinish = () => {
+    hideCheckOut();
+    clearItems();
+    clearData();
+    setForm(formInitialState);
+  };
+
+  let actions = (
+    <>
+      <Button textOnly={true} onClick={handleClose}>
+        Close
+      </Button>
+      <Button textOnly={false} type='submit'>
+        Submit Order
+      </Button>
+    </>
+  );
+
+  if (isSending) {
+    actions = <span>Sending order data</span>;
+  }
+
+  if (data && !error) {
+    console.log(data, error, progress);
+    return (
+      <Modal open={progress === 'CHECKOUT'} onClose={handleClose}>
+        <h2>Success</h2>
+        <p>Your order was submitted successfully</p>
+        <p>We will get back to you with more details via email within the next few minutes</p>
+        <p className='modal-actions'>
+          <Button textOnly={false} onClick={handleFinish}>
+            Okay
+          </Button>
+        </p>
+      </Modal>
+    );
+  }
 
   return (
     <Modal open={progress === 'CHECKOUT'} onClose={handleClose}>
@@ -145,14 +210,10 @@ function Checkout() {
             error={form.city.isTouched ? form.city.error : null}
           />
         </div>
-        <p className='modal-actions'>
-          <Button textOnly={true} onClick={handleClose}>
-            Close
-          </Button>
-          <Button textOnly={false} type='submit'>
-            Submit Order
-          </Button>
-        </p>
+
+        {error && <Error title='Failed to submit order' message={error} />}
+
+        <p className='modal-actions'>{actions}</p>
       </form>
     </Modal>
   );
