@@ -1,5 +1,6 @@
 import MealItem from './MealItem';
 import useHttp from '../hooks/useHttp';
+import Error from './Error';
 
 type MealType = {
   id: string;
@@ -29,7 +30,7 @@ function Meals() {
   }
 
   if (error) {
-    return <p>Error: {error}</p>;
+    return <Error title='Failed to fetch meals' message={error} />;
   }
 
   return (

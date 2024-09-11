@@ -256,6 +256,15 @@ h1 {
 .center {
   text-align: center;
 }
+.error {
+  width: 400px;
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  background-color: #8b3f3f;
+}
+
 @keyframes fade-slide-up {
   from {
     opacity: 0;
