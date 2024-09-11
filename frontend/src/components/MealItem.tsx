@@ -15,8 +15,7 @@ type MealItemProps = {
 };
 
 function MealItem({ meal }: MealItemProps) {
-  const { addItem, items } = useCart();
-  console.log(items);
+  const { addItem } = useCart();
 
   const handleAddToCart = () => {
     addItem({ ...meal, quantity: 1 });

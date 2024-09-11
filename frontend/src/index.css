@@ -14,6 +14,11 @@ body {
   min-height: 100vh;
 }
 
+.error-message {
+  color: red;
+  font-weight: 600;
+}
+
 #main-header {
   display: flex;
   justify-content: space-between;
