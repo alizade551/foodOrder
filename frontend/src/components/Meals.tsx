@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import MealItem from './MealItem';
+import useHttp from '../hooks/useHttp';
 
 type MealType = {
   id: string;
@@ -8,27 +8,33 @@ type MealType = {
   description: string;
   image: string;
 };
+
+type HttpResponse<T> = {
+  data: T | undefined;
+  isLoading: boolean;
+  error: string | null;
+  sendRequest: () => Promise<void>;
+};
+
+const requestConfig = {};
 function Meals() {
-  const [meals, setMeals] = useState<MealType[]>([]);
+  const {
+    data: meals,
+    isLoading,
+    error,
+  }: HttpResponse<MealType[]> = useHttp<MealType[]>('http://localhost:3000/meals', requestConfig, []);
 
-  useEffect(() => {
-    const fetchMeals = async () => {
-      const response = await fetch('http://localhost:3000/meals', { method: 'GET' });
+  if (isLoading) {
+    return <p className='center'>Loading meals...</p>;
+  }
 
-      if (!response.ok) {
-        throw new Error(response.statusText);
-      }
-
-      const data = await response.json();
-      setMeals(data);
-    };
-
-    fetchMeals();
-  }, []);
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
 
   return (
     <ul id='meals'>
-      {meals.map((meal: MealType) => (
+      {meals?.map((meal) => (
         <MealItem key={meal.id} meal={meal} />
       ))}
     </ul>

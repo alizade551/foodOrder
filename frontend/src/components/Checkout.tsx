@@ -78,7 +78,19 @@ function Checkout() {
       return;
     }
 
-    console.log(form);
+    console.log(form, items);
+    fetch('http://localhost:3000/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        order: {
+          items,
+          customer: form,
+        },
+      }),
+    });
   };
 
   const handleClose = () => {
