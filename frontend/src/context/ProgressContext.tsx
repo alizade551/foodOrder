@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useCallback, useState } from 'react';
 
 type ProgressContextType = {
   progress: ProgressType;
@@ -25,17 +25,17 @@ export function ProgressContextProvider({ children }: ProgressContextProviderPro
   const showCart = () => {
     setProgress('CART');
   };
-  const hideCart = () => {
+  const hideCart = useCallback(() => {
     setProgress(null);
-  };
+  }, []);
 
-  const showCheckout = () => {
+  const showCheckout = useCallback(() => {
     setProgress('CHECKOUT');
-  };
+  }, []);
 
-  const hideCheckOut = () => {
+  const hideCheckOut = useCallback(() => {
     setProgress(null);
-  };
+  }, []);
 
   const progressContextValue = {
     progress,

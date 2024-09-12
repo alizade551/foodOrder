@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useCart } from '../hooks/useCart';
 import { currencyFormatter } from '../util/formatting';
 import Button from './UI/Button';
@@ -17,9 +18,9 @@ type MealItemProps = {
 function MealItem({ meal }: MealItemProps) {
   const { addItem } = useCart();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = useCallback(() => {
     addItem({ ...meal, quantity: 1 });
-  };
+  }, [addItem, meal]);
 
   return (
     <li className='meal-item'>
@@ -31,7 +32,7 @@ function MealItem({ meal }: MealItemProps) {
           <p className='meal-item-description'> {meal.description}</p>
         </div>
         <p className='meal-item-actions'>
-          <Button textOnly={false} onClick={() => handleAddToCart()}>
+          <Button textOnly={false} onClick={handleAddToCart}>
             Add to cart
           </Button>
         </p>

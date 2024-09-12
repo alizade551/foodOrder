@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useCallback, useReducer } from 'react';
 
 export type cartItem = {
   id: string;
@@ -82,17 +82,17 @@ const cartReducer = (state: cartItemsType, action: CartActionType) => {
 export const CartContextProvider = ({ children }: CartContextProviderProps) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
-  const addItem = (item: cartItem) => {
+  const addItem = useCallback((item: cartItem) => {
     dispatch({ type: 'ADD_ITEM', payload: { item } });
-  };
+  }, []);
 
-  const removeItem = (id: string) => {
+  const removeItem = useCallback((id: string) => {
     dispatch({ type: 'REMOVE_ITEM', payload: { id } });
-  };
+  }, []);
 
-  const clearItems = () => {
+  const clearItems = useCallback(() => {
     dispatch({ type: 'CLEAR_ITEMS' });
-  };
+  }, []);
 
   const cartContextValue = { items: state.items, addItem, removeItem, clearItems };
 

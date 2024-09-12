@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import logo from '../assets/logo.jpg';
 import { useCart } from '../hooks/useCart';
 import { useProgress } from '../hooks/useProgress';
@@ -8,7 +9,7 @@ function Header() {
   const { showCart } = useProgress();
   const totalCartsItems = items.reduce((acc, item) => (acc += item.quantity), 0);
 
-  const handleShowCart = () => showCart();
+  const handleShowCart = useCallback(() => showCart(), [showCart]);
   return (
     <header id='main-header'>
       <div id='title'>
